@@ -21,14 +21,12 @@
   (and (listp gcode)
        (keywordp (first gcode))))
 
-(defun g-to-stream (gcode &optional (s *standard-output*) (cnt 10))
+(defun g-to-stream (gcode &optional (s *standard-output*))
   (loop for line in gcode
-     do (if (g-code-listp line)
-	    ;; nested program
-	    (setf cnt (g-to-stream line s cnt))
-	    (progn (format s "N~A ~A~%" cnt (g-line line))
-		   (incf cnt 10))))
-  cnt)
+        do (if (g-code-listp line)
+	             ;; nested program
+               (g-to-stream line s)
+	             (format s "~A~%" (g-line line)))))
 
 #+nil
 (defmacro g-program (&rest code)
